@@ -1,0 +1,13 @@
+{
+  "type": 3,
+  "nonce": "$nonce",
+  "channel_id": "$channel_id",
+  "message_flags": 0,
+  "message_id": "$message_id",
+  "application_id": "936929561302675456",
+  "session_id": "$session_id",
+  "data": {
+    "component_type": 2,
+    "custom_id": "$action::$message_hash::SOLO"
+  }
+}
