@@ -15,12 +15,18 @@
 - [x] user-token 连接 wss，可以获取错误信息和完整功能
 ## 使用前提
 #### 1. 注册并订阅 MidJourney，创建`自己的服务器和频道`，参考 https://docs.midjourney.com/docs/quick-start
-#### 2. 获取用户Token、频道私信ID：
+#### 2. 获取用户Token、私信机器人ID：
 - #### 获取用户Token
         登录网页端 discord 按F12打开开发者工具，刷新页面，找到 `messages` 的请求 ，然后在请求体中找到authorization字段，他的值就是我们需要的 Token，设置到 mj.discord.user-token。
     ![img.png](img.png)
-- #### 获取频道私信ID
-        频道的url里取出频道私信ID，设置到 mj.discord.channel-id。
+- #### 获取私信机器人ID
+    ###### 首先点击midjourney官方频道进入（点击没反应，一般都是梯子问题，梯子换个节点） 。
+    ![image](https://github.com/y1466382670/midjourney-api/assets/31975879/42d72ff4-9bd9-4d6b-9dcc-ad653c8d2c11)
+    ###### 右上角搜索midjourney  
+    ![image](https://github.com/y1466382670/midjourney-api/assets/31975879/eb7cb438-3570-4e4f-a2e2-429ee9b0be6c)
+    ###### 点击midjourney bot,发送私信
+    ![image](https://github.com/y1466382670/midjourney-api/assets/31975879/606bc535-3a1e-4991-957a-327c3da030a8)
+    ###### 私信的url里取出私信机器人ID，设置到 mj.discord.channel-id。
     ![img_1.png](img_1.png)
 
 ## 本地开发
