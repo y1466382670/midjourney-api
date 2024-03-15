@@ -39,6 +39,6 @@
 
 开放API使用方式 [参考地址](https://blog.csdn.net/voyage_yan/article/details/135335189)
 
-开放API文档 [参考地址](https://doc.mjapiapp.com/)
+开放API文档 [参考地址](https://docs-zh.mjapiapp.com/)
 
 <img src="https://cpiaoju-pro.oss-cn-beijing.aliyuncs.com/other/20240304/1e604e529921b464cd0ffe101b9285d.png" width="220" alt="微信二维码"/>
