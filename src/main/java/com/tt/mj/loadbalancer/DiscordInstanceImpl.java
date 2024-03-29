@@ -101,21 +101,13 @@ public class DiscordInstanceImpl implements DiscordInstance {
 
 	@Override
 	public synchronized ResultJson submitImagineTask(Task task, Callable<Message<Void>> discordSubmit) {
-		int currentWaitNumbers;
 		try {
-			currentWaitNumbers = this.taskExecutor.getThreadPoolExecutor().getQueue().size();
 			Future<?> future = this.taskExecutor.submit(() -> executeTask(task, discordSubmit));
 			this.taskFutureMap.put(task.getId(), future);
 		} catch (RejectedExecutionException e) {
 			return new ResultJson().fail( "队列已满，请稍后尝试");
 		} catch (Exception e) {
 			return new ResultJson().fail( "提交失败，系统异常");
-		}
-		//0：队列等待中  1：执行中  2：已完成  3：已失败
-		if (currentWaitNumbers == 0) {
-			task.setProperty("logState", StatusEnum.RUNNING.getCode());
-		} else {
-			task.setProperty("logState", 0);
 		}
 		Map<String, Object> map = new HashMap<>();
 		map.put(Constants.TASK_PROPERTY_JOB_ID, task.getProperty(Constants.TASK_PROPERTY_JOB_ID));

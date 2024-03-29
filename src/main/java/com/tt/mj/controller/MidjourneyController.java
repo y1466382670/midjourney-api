@@ -9,6 +9,7 @@ import com.tt.mj.ProxyProperties;
 import com.tt.mj.domain.DiscordAccount;
 import com.tt.mj.dto.*;
 import com.tt.mj.entity.LogModel;
+import com.tt.mj.enums.StatusEnum;
 import com.tt.mj.enums.TaskAction;
 import com.tt.mj.enums.TranslateWay;
 import com.tt.mj.exception.BannedPromptException;
@@ -25,6 +26,7 @@ import eu.maxschuster.dataurl.IDataUrlSerializer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.MalformedURLException;
@@ -54,16 +56,8 @@ public class MidjourneyController {
 	 * @return
 	 */
 	@PostMapping("/imagine")
-	public ResultJson imagine(@RequestBody SubmitImagineDTO imagineDTO) {
+	public ResultJson imagine(@RequestBody @Validated SubmitImagineDTO imagineDTO) {
 		String prompt = imagineDTO.getPrompt();
-		if (CharSequenceUtil.isBlank(prompt)) {
-			return new ResultJson().fail("\"prompt\" cannot be empty!");
-		}
-		String mode = imagineDTO.getMode();
-		String[] modes = {"fast","relax","turbo"};
-		if (!Arrays.asList(modes).contains(mode)) {
-			return new ResultJson().fail("\"mode\" parameter error!");
-		}
 		Task task = newTask(imagineDTO);
 		task.setAction(TaskAction.IMAGINE.getName());
 		task.setPrompt(prompt);
@@ -72,32 +66,29 @@ public class MidjourneyController {
 		try {
 			BannedPromptUtils.checkBanned(promptEn);
 		} catch (BannedPromptException e) {
-			return new ResultJson().fail("May contain sensitive words：" + e.getMessage());
+			return new ResultJson().fail("存在敏感词：" + e.getMessage());
 		}
 		task.setPromptEn(promptEn);
 		task.setDescription("/imagine " + prompt);
-		task.setProperty(Constants.TASK_PROPERTY_MODE, mode);
+		task.setProperty(Constants.TASK_PROPERTY_MODE, imagineDTO.getMode());
 		return this.taskService.submitImagine(task);
 	}
 
 	@PostMapping("/action")
-	public ResultJson action(@RequestBody SubmitActionDTO actionDTO) {
-		if (CharSequenceUtil.isBlank(actionDTO.getJobId())) {
-			return new ResultJson().fail("\"jobId\" cannot be empty!");
-		}
+	public ResultJson action(@RequestBody @Validated SubmitActionDTO actionDTO) {
 		if (ObjectUtils.isEmpty(TaskAction.getActionCommand(actionDTO.getAction()))) {
-			return new ResultJson().fail("\"action\" parameter error!");
+			return new ResultJson().fail("操作类型异常");
 		}
 		LogModel logModel = logModelService.getOne(new LambdaQueryWrapper<LogModel>()
 				.eq(LogModel::getJobId, actionDTO.getJobId()));
 		if (ObjectUtils.isEmpty(logModel)) {
-			return new ResultJson<>().fail("The associated task does not exist or has expired.");
+			return new ResultJson<>().fail("关联任务不存在");
 		}
-		if (!logModel.getStatus().equals(2)) {
-			return new ResultJson().fail("Associated task status error.");
+		if (!logModel.getStatus().equals(StatusEnum.SUCCESS.getCode())) {
+			return new ResultJson().fail("关联任务未成功");
 		}
 		if (!logModel.getComponents().contains(actionDTO.getAction())) {
-			return new ResultJson().fail("The associated task does not allow this change to be executed.");
+			return new ResultJson().fail("关联任务不存在此操作");
 		}
 		DiscordAccount account = accountMapper.selectById(logModel.getAccountId());
 		Task task = newTask(actionDTO);
@@ -107,19 +98,15 @@ public class MidjourneyController {
 		task.setProperty(Constants.TASK_PROPERTY_FINAL_PROMPT, logModel.getPrompt());
 		task.setProperty(Constants.TASK_PROPERTY_PROGRESS_MESSAGE_ID, logModel.getProgressMessageId());
 		task.setProperty(Constants.TASK_PROPERTY_DISCORD_INSTANCE_ID, account.getChannelId());
+		task.setProperty(Constants.TASK_PROPERTY_PID, logModel.getId());
 		String messageId = logModel.getMessageId();
 		String messageHash = logModel.getImageHash();
-		if (actionDTO.getAction().contains("upsample") || actionDTO.getAction().contains("upscale"))
-		{
+		if (actionDTO.getAction().contains("upsample") || actionDTO.getAction().contains("upscale")) {
 			return this.taskService.submitUpscale(task, messageId, messageHash, TaskAction.getActionCommand(actionDTO.getAction()));
-		}
-		else if (actionDTO.getAction().contains("variation") && actionDTO.getAction().startsWith("variation"))
-		{
+		} else if (actionDTO.getAction().contains("variation") && actionDTO.getAction().startsWith("variation")) {
 			int index = Integer.parseInt(actionDTO.getAction().substring(actionDTO.getAction().length() - 1));
 			return this.taskService.submitVariation(task, messageId, messageHash, index);
-		}
-		else
-		{
+		} else {
 			return this.taskService.submitAction(task, messageId, messageHash, TaskAction.getActionCommand(actionDTO.getAction()));
 		}
 	}
