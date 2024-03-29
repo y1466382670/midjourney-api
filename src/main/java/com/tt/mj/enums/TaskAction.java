@@ -6,9 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum TaskAction {
-	/**
-	 * 生成图片.
-	 */
+
 	IMAGINE("imagine", "imagine"),
 
 	UPSAMPLE1("upsample1", "MJ::JOB::upsample::1"),
@@ -43,29 +41,14 @@ public enum TaskAction {
 
 	PAN_DOWN("pan_down", "MJ::JOB::pan_down::1"),
 
-	/**
-	 * 重新执行
-	 */
 	REROLL("reroll", "MJ::JOB::reroll::0"),
 
-	/**
-	 * 缩小两倍
-	 */
 	ZOOM_OUT_2("zoom_out_2", "MJ::Outpaint::50::1"),
 
-	/**
-	 * 缩小1.5倍
-	 */
 	ZOOM_OUT_1_5("zoom_out_1_5", "MJ::Outpaint::75::1"),
 
-	/**
-	 * 混图生成
-	 */
 	BLEND("blend", "blend"),
 
-	/**
-	 * 图转文
-	 */
 	DESCRIBE("describe", "describe");
 
 	public String name;

@@ -47,9 +47,9 @@ public class DiscordInstanceImpl implements DiscordInstance {
 		this.service = new DiscordServiceImpl(account, restTemplate, discordServer, paramsMap);
 		this.runningTasks = new CopyOnWriteArrayList<>();
 		this.taskExecutor = new ThreadPoolTaskExecutor();
-		this.taskExecutor.setCorePoolSize(account.getCoreSize());
-		this.taskExecutor.setMaxPoolSize(account.getCoreSize());
-		this.taskExecutor.setQueueCapacity(account.getQueueSize());
+		this.taskExecutor.setCorePoolSize(account.getMaxQueue());
+		this.taskExecutor.setMaxPoolSize(account.getMaxQueue());
+		this.taskExecutor.setQueueCapacity(account.getMaxJob());
 		this.taskExecutor.setThreadNamePrefix("TaskQueue-" + account.getDisplay() + "-");
 		this.taskExecutor.initialize();
 	}

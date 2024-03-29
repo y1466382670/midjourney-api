@@ -10,15 +10,10 @@ import java.util.regex.Pattern;
 
 /**
  * upscale消息处理.
- * 完成(create): **cat** - Upscaled (Beta或Light) by <@1083152202048217169> (fast)
- * 完成(create): **cat** - Upscaled by <@1083152202048217169> (fast)
- * 完成(create): **cat** - Image #1 <@1012983546824114217>
  */
 @Slf4j
 @Component
 public class UpscaleSuccessHandler extends MessageHandler {
-    //    private static final String CONTENT_REGEX_1 = "Upscaling image #(.*?) with \\*\\*(.*?)\\*\\* - <@\\d+> \\((.*?)\\)";
-//    private static final String CONTENT_REGEX_2 = "\\*\\*(.*?)\\*\\* - Upscaled by <@\\d+> \\((.*?)\\)";
     private static final String CONTENT_REGEX_UP = "\\*\\*(.*?)\\*\\* - Image #(.*?) <@\\d+>";
 
     @Override
@@ -26,8 +21,6 @@ public class UpscaleSuccessHandler extends MessageHandler {
         String content = getMessageContent(message);
         String action = getParseData(content);
         if (MessageType.CREATE.equals(messageType) && action != null && hasImage(message)) {
-            log.debug("UpscaleSuccessHandler：" + message);
-//            //处理U特殊情况  wait for start的情况
             finishUTask(message, action);
         }
     }
@@ -39,7 +32,6 @@ public class UpscaleSuccessHandler extends MessageHandler {
             action = "upsample" + matcher2.group(2);
         }
         return action;
-
     }
 
 }

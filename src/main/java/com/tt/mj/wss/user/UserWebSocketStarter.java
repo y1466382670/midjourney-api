@@ -89,12 +89,12 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 
 	@Override
 	public void onConnected(WebSocket websocket, Map<String, List<String>> headers) {
-		log.debug("[wss-{}] Connected to websocket.", this.account.getMjBotId());
+		log.debug("[wss-{}] Connected to websocket.", this.account.getChannelId());
 	}
 
 	@Override
 	public void handleCallbackError(WebSocket websocket, Throwable cause) throws Exception {
-		log.error("[wss-{}] There was some websocket error.", this.account.getMjBotId(), cause);
+		log.error("[wss-{}] There was some websocket error.", this.account.getChannelId(), cause);
 	}
 
 	@Override
@@ -116,15 +116,15 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 			// 隐式关闭wss
 			clearAllStates();
 		} else if (code >= 4000) {
-			log.warn("[wss-{}] Can't reconnect! Account disabled. Closed by {}({}).", this.account.getMjBotId(), code, closeReason);
+			log.warn("[wss-{}] Can't reconnect! Account disabled. Closed by {}({}).", this.account.getChannelId(), code, closeReason);
 			clearAllStates();
 			this.account.setEnable(false);
 		} else if (code == 2001) {
 			// reconnect
-			log.warn("[wss-{}] Waiting try reconnect...", this.account.getMjBotId());
+			log.warn("[wss-{}] Waiting try reconnect...", this.account.getChannelId());
 			tryReconnect();
 		} else {
-			log.warn("[wss-{}] Closed by {}({}). Waiting try new connection...", this.account.getMjBotId(), code, closeReason);
+			log.warn("[wss-{}] Closed by {}({}). Waiting try new connection...", this.account.getChannelId(), code, closeReason);
 			tryNewConnect();
 		}
 	}
@@ -138,7 +138,7 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 			if (e instanceof TimeoutException) {
 				sendClose(5240, "try new connect");
 			}
-			log.warn("[wss-{}] Try reconnect fail: {}, Waiting try new connection...", this.account.getMjBotId(), e.getMessage());
+			log.warn("[wss-{}] Try reconnect fail: {}, Waiting try new connection...", this.account.getChannelId(), e.getMessage());
 			ThreadUtil.sleep(1000);
 			tryNewConnect();
 		}
@@ -155,20 +155,20 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 				if (e instanceof TimeoutException) {
 					sendClose(5240, "try new connect");
 				}
-				log.warn("[wss-{}] Try new connection fail ({}): {}", this.account.getMjBotId(), i, e.getMessage());
+				log.warn("[wss-{}] Try new connection fail ({}): {}", this.account.getChannelId(), i, e.getMessage());
 				ThreadUtil.sleep(5000);
 			}
 		}
-		log.error("[wss-{}] Account disabled", this.account.getMjBotId());
+		log.error("[wss-{}] Account disabled", this.account.getChannelId());
 		this.account.setEnable(false);
 	}
 
 	public void tryStart(boolean reconnect) throws Exception {
 		start();
-		AsyncLockUtils.LockObject lock = AsyncLockUtils.waitForLock("wss:" + this.account.getMjBotId(), Duration.ofSeconds(20));
+		AsyncLockUtils.LockObject lock = AsyncLockUtils.waitForLock("wss:" + this.account.getChannelId(), Duration.ofSeconds(20));
 		int code = lock.getProperty("code", Integer.class, 0);
 		if (code == ReturnCode.SUCCESS) {
-			log.debug("[wss-{}] {} success.", this.account.getMjBotId(), reconnect ? "Reconnect" : "New connect");
+			log.debug("[wss-{}] {} success.", this.account.getChannelId(), reconnect ? "Reconnect" : "New connect");
 			return;
 		}
 		throw new ValidateException(lock.getProperty("description", String.class));
@@ -189,7 +189,7 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 
 		switch (opCode) {
 			case WebSocketCode.HEARTBEAT -> {
-				log.debug("[wss-{}] Receive heartbeat.", this.account.getMjBotId());
+				log.debug("[wss-{}] Receive heartbeat.", this.account.getChannelId());
 				handleHeartbeat();
 			}
 			case WebSocketCode.HEARTBEAT_ACK -> {
@@ -201,18 +201,18 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 				doResumeOrIdentify();
 			}
 			case WebSocketCode.RESUME -> {
-				log.debug("[wss-{}] Receive resumed.", this.account.getMjBotId());
+				log.debug("[wss-{}] Receive resumed.", this.account.getChannelId());
 				connectSuccess();
 			}
 			case WebSocketCode.RECONNECT -> sendReconnect("receive server reconnect");
 			case WebSocketCode.INVALIDATE_SESSION -> sendClose(1009, "receive session invalid");
 			case WebSocketCode.DISPATCH -> handleDispatch(data);
-			default -> log.debug("[wss-{}] Receive unknown code: {}.", this.account.getMjBotId(), data);
+			default -> log.debug("[wss-{}] Receive unknown code: {}.", this.account.getChannelId(), data);
 		}
 	}
 
 	private void handleBotHello(){
-		send(13, DataObject.empty().put("channel_id", this.account.getMjBotId()));
+		send(13, DataObject.empty().put("channel_id", this.account.getChannelId()));
 	}
 
 	private void handleHello(DataObject data) {
@@ -231,10 +231,10 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 
 	private void doResumeOrIdentify() {
 		if (CharSequenceUtil.isBlank(this.sessionId)) {
-			log.debug("[wss-{}] Send identify msg.", this.account.getMjBotId());
+			log.debug("[wss-{}] Send identify msg.", this.account.getChannelId());
 			send(WebSocketCode.IDENTIFY, this.authData);
 		} else {
-			log.debug("[wss-{}] Send resume msg.", this.account.getMjBotId());
+			log.debug("[wss-{}] Send resume msg.", this.account.getChannelId());
 			send(WebSocketCode.RESUME, DataObject.empty().put("token", this.account.getToken())
 					.put("session_id", this.sessionId).put("seq", this.sequence));
 		}
@@ -308,7 +308,7 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 	}
 
 	private void connectFinish(int code, String description) {
-		AsyncLockUtils.LockObject lock = AsyncLockUtils.getLock("wss:" + this.account.getMjBotId());
+		AsyncLockUtils.LockObject lock = AsyncLockUtils.getLock("wss:" + this.account.getChannelId());
 		if (lock != null) {
 			lock.setProperty("code", code);
 			lock.setProperty("description", description);
@@ -326,19 +326,19 @@ public class UserWebSocketStarter extends WebSocketAdapter implements WebSocketS
 		if ("READY".equals(t)) {
 			this.sessionId = content.getString("session_id");
 			this.resumeGatewayUrl = content.getString("resume_gateway_url");
-			log.debug("[wss-{}] Dispatch ready: identify.", this.account.getMjBotId());
+			log.debug("[wss-{}] Dispatch ready: identify.", this.account.getChannelId());
 			handleBotHello();
 			connectSuccess();
 			return;
 		} else if ("RESUMED".equals(t)) {
-			log.debug("[wss-{}] Dispatch read: resumed.", this.account.getMjBotId());
+			log.debug("[wss-{}] Dispatch read: resumed.", this.account.getChannelId());
 			connectSuccess();
 			return;
 		}
 		try {
 			this.userMessageListener.onMessage(raw);
 		} catch (Exception e) {
-			log.error("[wss-{}] Handle message error", this.account.getMjBotId(), e);
+			log.error("[wss-{}] Handle message error", this.account.getChannelId(), e);
 		}
 	}
 

@@ -4,7 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.tt.mj.ProxyProperties;
-import com.tt.mj.entity.Account;
+import com.tt.mj.domain.DiscordAccount;
 import com.tt.mj.entity.LogModel;
 import com.tt.mj.enums.MessageType;
 import com.tt.mj.enums.StatusEnum;
@@ -17,7 +17,6 @@ import net.dv8tion.jda.api.utils.data.DataObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
 import java.util.Optional;
 
 @Slf4j
@@ -56,41 +55,18 @@ public class ErrorMessageHandler extends MessageHandler {
 		} else if (color == 16711680) {
 			log.error("{} - MJ异常信息: {}\n{}\nfooter: {}", channelId, title, description, footerText);
 			log.error("{} - MJ异常信息message: {}\n", channelId, message);
-			if(StrUtil.contains(description,"You have been blocked")){ //封号了已经
-				Account account = accountMapper.selectOne(
-						new QueryWrapper<Account>().lambda().eq(Account::getMjBotId, channelId)
-				);
-				account.setDiscordInfo(description);
-				account.setEnable(3);
-				account.setUpdatedAt(new Date());
-				accountMapper.updateById(account);
-			}
-			if(StrUtil.contains(description,"You've run out of hours on your plan")){ //用光了已经
-				Account account = accountMapper.selectOne(
-						new QueryWrapper<Account>().lambda().eq(Account::getMjBotId, channelId)
-				);
-				account.setDiscordInfo(description);
-				account.setEnable(4);
-				account.setUpdatedAt(new Date());
-				accountMapper.updateById(account);
-			}
 
-			if(StrUtil.contains(description,"You can upgrade to a paid plan to do so")){ //过期已经
-				Account account = accountMapper.selectOne(
-						new QueryWrapper<Account>().lambda().eq(Account::getMjBotId, channelId)
-				);
-				account.setDiscordInfo(description);
-				account.setEnable(5);
-				account.setUpdatedAt(new Date());
-				accountMapper.updateById(account);
-			}
+			DiscordAccount account = accountMapper.selectOne(
+					new QueryWrapper<DiscordAccount>().lambda().eq(DiscordAccount::getChannelId, channelId)
+			);
+			account.setEnable(false);
+			accountMapper.updateById(account);
 
 			if(MessageType.UPDATE.equals(messageType)){
 				String progressId = message.getString("id");
 				if(StrUtil.isNotBlank(progressId)){
 					dealByProgressId(progressId, null, "[" + title + "] " + description);
 				}
-
 			} else if (MessageType.CREATE.equals(messageType)) {
 				//可能是U操作 也可能是imagine
 				log.error("{} - MJ异常信息messageCreate: {}\n", channelId, message);
@@ -98,7 +74,6 @@ public class ErrorMessageHandler extends MessageHandler {
 				String nonce = getMessageNonce(message);
 				dealByProgressId(progressId, nonce, "[" + title + "] " + description);
 			}
-
 		} else if (CharSequenceUtil.contains(title, "Invalid link")) {
 			// 兼容 Invalid link! 错误
 			log.error("{} - MJ异常信息: {}\n{}\nfooter: {}", channelId, title, description, footerText);
@@ -111,23 +86,19 @@ public class ErrorMessageHandler extends MessageHandler {
 			if (CharSequenceUtil.isBlank(referenceMessageId)) {
 				return;
 			}
-
 			dealByProgressId(referenceMessageId, null,"[" + title + "] " + description);
 		}
-
 	}
 
 	public void dealByProgressId(String progressId, String nonce, String message){
 		LogModel logModel = logModelMapper.selectOne(
 				new QueryWrapper<LogModel>().lambda().eq(LogModel::getProgressMessageId, progressId)
 		);
-
 		if(logModel == null){
 			logModel = logModelMapper.selectOne(
 					new QueryWrapper<LogModel>().lambda().eq(LogModel::getNonce, nonce)
 			);
 		}
-
 		if(logModel != null){
 			logModel.setStatus(StatusEnum.FAILED.getCode());
 			logModel.setMessage(message);

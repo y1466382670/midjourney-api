@@ -1,6 +1,7 @@
 package com.tt.mj.domain;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -12,12 +13,9 @@ import java.util.Map;
 
 
 public class DomainObject implements Serializable {
-	@Getter
-	@Setter
-	@ApiModelProperty("ID")
-	protected String id;
 
 	@Setter
+	@TableField(exist = false)
 	protected Map<String, Object> properties; // 扩展属性，仅支持基本类型
 
 	@JsonIgnore

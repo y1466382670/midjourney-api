@@ -33,30 +33,23 @@ public class StartAndProgressHandler extends MessageHandler {
             if (isError(message)) {
                 return;
             }
-            log.debug("首次更新id：" + message.getString("id"));
-
-            //首次更新id
             LogModel logModel = logModelMapper.selectOne(
                     new QueryWrapper<LogModel>().lambda().eq(LogModel::getNonce, message.getString("nonce"))
             );
             if (logModel != null) {
                 logModel.setProgressMessageId(message.getString("id"));
-                //绑定hash
                 if(!message.getArray("components").isEmpty()){
                     List<String> customIds = JsonPath.read(message.getArray("components").toString(), "$..components[*].custom_id");
                     String cusId = customIds.get(0);
                     String hash = CharSequenceUtil.sub(cusId, cusId.lastIndexOf("::") + 2, cusId.length());
-                    //U在第一步 绑定hash
                     logModel.setImageHash(hash);
                 }
                 logModelMapper.updateById(logModel);
             }
 
         } else if (MessageType.UPDATE.equals(messageType) && parseData != null) {
-
             String imageUrl = getImageUrl(message);
             String imagineHash = this.discordHelper.getMessageHash(imageUrl);
-
             //任务进行中
             LogModel logModel = logModelMapper.selectOne(
                     new QueryWrapper<LogModel>().lambda().eq(LogModel::getProgressMessageId, message.getString("id"))
@@ -67,7 +60,6 @@ public class StartAndProgressHandler extends MessageHandler {
                 logModel.setProgress(parseData.getStatus().replace("%", ""));
                 logModelMapper.updateById(logModel);
             }
-
         }
     }
 

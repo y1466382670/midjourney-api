@@ -77,7 +77,7 @@ public class TaskServiceImpl implements TaskService {
 			return new ResultJson<>().fail("No available accounts");
 		}
 		//账号ID
-		task.setProperty(Constants.TASK_PROPERTY_ACCOUNT_ID, discordInstance.account().getAccountId());
+		task.setProperty(Constants.TASK_PROPERTY_ACCOUNT_ID, discordInstance.account().getId());
 		task.setProperty(Constants.TASK_PROPERTY_DISCORD_INSTANCE_ID, discordInstance.getInstanceId());
 		return discordInstance.submitImagineTask(task, () -> {
 			String taskFileName = task.getId() + "." + MimeTypeUtils.guessFileSuffix(dataUrl.getMimeType());

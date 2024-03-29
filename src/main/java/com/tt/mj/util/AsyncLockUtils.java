@@ -4,6 +4,7 @@ import cn.hutool.cache.CacheUtil;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.thread.ThreadUtil;
 import com.tt.mj.domain.DomainObject;
+import lombok.Data;
 import lombok.experimental.UtilityClass;
 
 import java.time.Duration;
@@ -50,7 +51,10 @@ public class AsyncLockUtils {
 		return lockObject;
 	}
 
+	@Data
 	public static class LockObject extends DomainObject {
+
+		private String id;
 
 		public LockObject(String id) {
 			this.id = id;

@@ -1,13 +1,11 @@
 package com.tt.mj.support;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.exceptions.ValidateException;
-import cn.hutool.core.text.CharSequenceUtil;
-import com.tt.mj.ProxyProperties;
 import com.tt.mj.ReturnCode;
 import com.tt.mj.domain.DiscordAccount;
 import com.tt.mj.loadbalancer.DiscordInstance;
 import com.tt.mj.loadbalancer.DiscordLoadBalancer;
+import com.tt.mj.mapper.AccountMapper;
 import com.tt.mj.util.AsyncLockUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,28 +24,15 @@ import java.util.stream.Collectors;
 public class DiscordAccountInitializer implements ApplicationRunner {
 	private final DiscordLoadBalancer discordLoadBalancer;
 	private final DiscordAccountHelper discordAccountHelper;
-	private final ProxyProperties properties;
-
+	private final AccountMapper accountMapper;
 
 	@Override
 	public void run(ApplicationArguments args) {
 		log.debug("初始化：DiscordAccountInitializer run");
-		List<ProxyProperties.DiscordAccountConfig> configAccounts = this.properties.getAccounts();
-		if (CharSequenceUtil.isNotBlank(this.properties.getDiscord().getChannelId())) {
-			configAccounts.add(this.properties.getDiscord());
-		}
-		ProxyProperties.ProxyConfig proxyConfig = this.properties.getProxy();
+		List<DiscordAccount> accounts = accountMapper.selectList(null);
 
 		List<DiscordInstance> instances = this.discordLoadBalancer.getAllInstances();
-		for (ProxyProperties.DiscordAccountConfig configAccount : configAccounts) {
-			DiscordAccount account = new DiscordAccount();
-			BeanUtil.copyProperties(configAccount, account);
-			account.setId(configAccount.getChannelId());
-			account.setChannelId(configAccount.getChannelId());
-			account.setToken(configAccount.getUserToken());
-			account.setProxyIp(proxyConfig.getHost());
-			account.setProxyPort(proxyConfig.getPort());
-			account.setMjBotId(configAccount.getChannelId());
+		for (DiscordAccount account : accounts) {
 			try {
 				DiscordInstance instance = this.discordAccountHelper.createDiscordInstance(account);
 				if (!account.isEnable()) {

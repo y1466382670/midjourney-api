@@ -1,7 +1,6 @@
 package com.tt.mj.util;
 
 import cn.hutool.core.text.CharSequenceUtil;
-//import com.tt.mj.enums.TaskAction;
 import eu.maxschuster.dataurl.DataUrl;
 import eu.maxschuster.dataurl.DataUrlSerializer;
 import eu.maxschuster.dataurl.IDataUrlSerializer;

@@ -7,19 +7,20 @@ logging:
     ROOT: info
     com.tt.mj: debug
 mj:
+  task-store:
+    # redis || in_memory
+    type: in_memory
+    timeout: 30d
+  translate-way: null
   #百度翻译配置
-  translate-way: BAIDU
   baidu-translate:
-    appid: appid
-    app-secret: app-secret
-  #discord账号配置
-  discord:
-    user-token: MTIwOTg5MzkwNjcxMjM3MTMxMA.GwkE2t.Oe-oXrYB_4OyfSYJXb9Uk4ok0lHOjlHfU9kbNc
-    channel-id: 1212019107843805204
+    appid: ""
+    app-secret: ""
   #代理配置
   proxy:
     host: 127.0.0.1
     port: 32345
+
 spring:
   datasource:
     druid:

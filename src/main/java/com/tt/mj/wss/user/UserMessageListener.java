@@ -16,9 +16,6 @@ public class UserMessageListener {
 	private final DiscordAccount account;
 	private final List<MessageHandler> messageHandlers;
 
-	@Resource
-	private MessageHandler userWebSocketStarter;
-
 	public UserMessageListener(DiscordAccount account, List<MessageHandler> messageHandlers) {
 		this.account = account;
 		this.messageHandlers = messageHandlers;
@@ -41,7 +38,7 @@ public class UserMessageListener {
 
 	private boolean ignoreAndLogMessage(DataObject data, MessageType messageType) {
 		String channelId = data.getString("channel_id");
-		if (!CharSequenceUtil.equals(channelId, this.account.getMjBotId())) {
+		if (!CharSequenceUtil.equals(channelId, this.account.getChannelId())) {
 			return true;
 		}
 		String authorName = data.optObject("author").map(a -> a.getString("username")).orElse("System");

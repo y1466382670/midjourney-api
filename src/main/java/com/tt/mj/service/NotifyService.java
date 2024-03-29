@@ -1,6 +1,5 @@
 package com.tt.mj.service;
 
-
 import com.tt.mj.entity.LogModel;
 import com.tt.mj.support.Task;
 

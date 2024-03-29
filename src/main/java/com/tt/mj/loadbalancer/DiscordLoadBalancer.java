@@ -1,15 +1,13 @@
 package com.tt.mj.loadbalancer;
 
 import cn.hutool.core.text.CharSequenceUtil;
-import com.tt.mj.domain.DiscordAccount;
+import com.tt.mj.Constants;
 import com.tt.mj.loadbalancer.rule.IRule;
 import com.tt.mj.support.Task;
-import com.tt.mj.support.TaskCondition;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Component
 @RequiredArgsConstructor
@@ -26,10 +24,6 @@ public class DiscordLoadBalancer {
 		return this.instances.stream().filter(DiscordInstance::isAlive).toList();
 	}
 
-	public void remove(DiscordAccount discordAccount) {
-		instances.removeIf(d -> d.account().getChannelId().equals(discordAccount.getChannelId()));
-	}
-
 	public DiscordInstance chooseInstance() {
 		return this.rule.choose(getAliveInstances());
 	}
@@ -43,35 +37,9 @@ public class DiscordLoadBalancer {
 				.findFirst().orElse(null);
 	}
 
-	public Set<String> getQueueTaskIds() {
-		Set<String> taskIds = Collections.synchronizedSet(new HashSet<>());
+	public Task getRunningTask(String jobId) {
 		for (DiscordInstance instance : getAliveInstances()) {
-			taskIds.addAll(instance.getRunningFutures().keySet());
-		}
-		return taskIds;
-	}
-
-	public Stream<Task> findRunningTask(TaskCondition condition) {
-		return getAliveInstances().stream().flatMap(instance -> instance.getRunningTasks().stream().filter(condition));
-	}
-
-	public Task getRunningTask(String id) {
-		for (DiscordInstance instance : getAliveInstances()) {
-			Optional<Task> optional = instance.getRunningTasks().stream().filter(t -> id.equals(t.getId())).findFirst();
-			if (optional.isPresent()) {
-				return optional.get();
-			}
-		}
-		return null;
-	}
-
-	public Task getRunningTaskByNonce(String nonce) {
-		if (CharSequenceUtil.isBlank(nonce)) {
-			return null;
-		}
-		TaskCondition condition = new TaskCondition().setNonce(nonce);
-		for (DiscordInstance instance : getAliveInstances()) {
-			Optional<Task> optional = instance.getRunningTasks().stream().filter(condition).findFirst();
+			Optional<Task> optional = instance.getRunningTasks().stream().filter(t -> jobId.equals(t.getProperty(Constants.TASK_PROPERTY_JOB_ID))).findFirst();
 			if (optional.isPresent()) {
 				return optional.get();
 			}

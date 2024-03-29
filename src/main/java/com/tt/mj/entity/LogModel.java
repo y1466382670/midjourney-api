@@ -35,8 +35,6 @@ public class LogModel {
 
     private String discordImage;
 
-    private String cdnImage;
-
     private String hookUrl;
 
     private Integer hookTimes;

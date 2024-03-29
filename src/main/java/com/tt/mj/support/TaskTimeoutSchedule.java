@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class TaskTimeoutSchedule {
 	private final DiscordLoadBalancer discordLoadBalancer;
 
-	@Scheduled(fixedRate = 30000L)
+	/*@Scheduled(fixedRate = 30000L)
 	public void checkTasks() {
 		this.discordLoadBalancer.getAliveInstances().forEach(instance -> {
 			long timeout = TimeUnit.MINUTES.toMillis(instance.account().getTimeoutMinutes());
@@ -34,5 +34,5 @@ public class TaskTimeoutSchedule {
 				instance.exitTask(task);
 			}
 		});
-	}
+	}*/
 }

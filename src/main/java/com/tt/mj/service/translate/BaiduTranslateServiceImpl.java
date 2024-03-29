@@ -1,6 +1,5 @@
 package com.tt.mj.service.translate;
 
-
 import cn.hutool.core.exceptions.ValidateException;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.RandomUtil;

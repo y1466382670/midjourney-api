@@ -79,10 +79,8 @@ public class NotifyServiceImpl implements NotifyService {
 		}
 	}
 
-
 	@Async
 	public void hookUrl(LogModel logModel){
-
 		String notifyHook = logModel.getHookUrl();
 		if(StrUtil.isBlank(notifyHook)){
 			return;
@@ -92,7 +90,6 @@ public class NotifyServiceImpl implements NotifyService {
 		hookNotify.setMessage(logModel.getMessage());
 		hookNotify.setJobId(logModel.getJobId());
 		HookNotify.SecondData secondData = new HookNotify.SecondData();
-
 		if(logModel.getStatus().equals(2)){
 			BeanUtils.copyProperties(logModel, secondData);
 			try {

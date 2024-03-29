@@ -16,12 +16,12 @@ public class BestWaitIdleRule implements IRule {
 			return null;
 		}
 		return instances.stream().min((i1, i2) -> {
-			int wait1 = i1.getRunningFutures().size() - i1.account().getCoreSize();
-			int wait2 = i2.getRunningFutures().size() - i2.account().getCoreSize();
+			int wait1 = i1.getRunningFutures().size() - i1.account().getMaxJob();
+			int wait2 = i2.getRunningFutures().size() - i2.account().getMaxJob();
 			if (wait1 == wait2 && wait1 == 0) {
 				// 都不需要等待时，选择空闲数最多的
-				int idle1 = i1.account().getCoreSize() - i1.getRunningTasks().size();
-				int idle2 = i2.account().getCoreSize() - i2.getRunningTasks().size();
+				int idle1 = i1.account().getMaxJob() - i1.getRunningTasks().size();
+				int idle2 = i2.account().getMaxJob() - i2.getRunningTasks().size();
 				return idle2 - idle1;
 			}
 			return wait1 - wait2;

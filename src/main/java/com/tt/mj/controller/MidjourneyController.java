@@ -6,8 +6,8 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.tt.mj.Constants;
 import com.tt.mj.ProxyProperties;
+import com.tt.mj.domain.DiscordAccount;
 import com.tt.mj.dto.*;
-import com.tt.mj.entity.Account;
 import com.tt.mj.entity.LogModel;
 import com.tt.mj.enums.TaskAction;
 import com.tt.mj.enums.TranslateWay;
@@ -41,9 +41,6 @@ public class MidjourneyController {
 	private final TranslateService translateService;
 	private final ProxyProperties properties;
 	private final TaskService taskService;
-
-	@Autowired
-	UserService userService;
 
 	@Autowired
 	AccountMapper accountMapper;
@@ -102,7 +99,7 @@ public class MidjourneyController {
 		if (!logModel.getComponents().contains(actionDTO.getAction())) {
 			return new ResultJson().fail("The associated task does not allow this change to be executed.");
 		}
-		Account account = accountMapper.selectById(logModel.getAccountId());
+		DiscordAccount account = accountMapper.selectById(logModel.getAccountId());
 		Task task = newTask(actionDTO);
 		task.setAction(actionDTO.getAction());
 		task.setPrompt(logModel.getPrompt());

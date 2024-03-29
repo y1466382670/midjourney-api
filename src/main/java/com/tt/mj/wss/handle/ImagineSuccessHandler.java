@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 
 /**
  * imagine消息处理.
- * 完成(create): **cat** - <@1012983546824114217> (relaxed)
  */
 @Slf4j
 @Component
@@ -34,10 +33,6 @@ public class ImagineSuccessHandler extends MessageHandler {
 			log.debug("ImagineSuccessHandler：" + message);
 			finishImageTask(message);
 		}
-
 	}
-
-
-
 
 }
