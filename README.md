@@ -23,7 +23,7 @@ English | [中文](./README_zh.md)
 #### 1. Register and subscribe to MidJourney, create your own server and channel，refer to https://docs.midjourney.com/docs/quick-start
 #### 2. Obtain user Token, channel ID
 - #### Obtain user Token
-        Log in to Discord on the web page, press F12 to open the developer tool, refresh the page, find the request for 'messages', and then find the Authorization field in the request body.
+    ###### Log in to Discord on the web page, press F12 to open the developer tool, refresh the page, find the request for 'messages', and then find the Authorization field in the request body.
     ![img.png](img.png)
 - #### Obtain channel ID
     ###### Click on the official channel of Midjournal to enter.
