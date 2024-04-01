@@ -44,8 +44,8 @@ English | [中文](./README_zh.md)
 ## Open Api
 Provide unofficial MJ open API, which can be used through the following link or added for administrator WeChat consultation. Note: mjapi
 
-Open API usage methods [参考地址](https://blog.csdn.net/voyage_yan/article/details/135335189)
+Open API usage methods [Reference address](https://blog.csdn.net/voyage_yan/article/details/135335189)
 
-Open API doc [参考地址](https://docs-zh.mjapiapp.com/)
+Open API doc [Reference address](https://docs-zh.mjapiapp.com/)
 
 <img src="https://cpiaoju-pro.oss-cn-beijing.aliyuncs.com/other/20240304/1e604e529921b464cd0ffe101b9285d.png" width="220" alt="微信二维码"/>
