@@ -20,28 +20,4 @@ public final class ReturnCode {
 	 * 系统异常.
 	 */
 	public static final int FAILURE = 9;
-
-	/**
-	 * 已存在.
-	 */
-	public static final int EXISTED = 21;
-	/**
-	 * 排队中.
-	 */
-	public static final int IN_QUEUE = 22;
-	/**
-	 * 队列已满.
-	 */
-	public static final int QUEUE_REJECTED = 23;
-	/**
-	 * prompt包含敏感词.
-	 */
-	public static final int BANNED_PROMPT = 24;
-
-	/**
-	 * TT-API-KEY错误或邮箱未激活
-	 */
-	public static final int UNAUTHORIZED = 401;
-
-
 }

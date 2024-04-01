@@ -54,7 +54,6 @@
     "replace": "upscale2",
     "addr": "::SOLO"
   },
-
   {
     "action": "MJ::JOB::upsample_v5_4x::1::",
     "replace": "upscale4",

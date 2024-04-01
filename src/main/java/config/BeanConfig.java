@@ -11,16 +11,11 @@ import com.tt.mj.service.translate.GPTTranslateServiceImpl;
 import com.tt.mj.service.translate.NoTranslateServiceImpl;
 import com.tt.mj.support.DiscordAccountHelper;
 import com.tt.mj.support.DiscordHelper;
-import com.tt.mj.support.Task;
 import com.tt.mj.wss.handle.MessageHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
@@ -42,16 +37,6 @@ public class BeanConfig {
 			case GPT -> new GPTTranslateServiceImpl(this.properties);
 			default -> new NoTranslateServiceImpl();
 		};
-	}
-
-	@Bean
-	RedisTemplate<String, Task> taskRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
-		RedisTemplate<String, Task> redisTemplate = new RedisTemplate<>();
-		redisTemplate.setConnectionFactory(redisConnectionFactory);
-		redisTemplate.setKeySerializer(new StringRedisSerializer());
-		redisTemplate.setHashKeySerializer(new StringRedisSerializer());
-		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(Task.class));
-		return redisTemplate;
 	}
 
 	@Bean
@@ -81,6 +66,4 @@ public class BeanConfig {
 		}
 		return new DiscordAccountHelper(discordHelper, restTemplate(), notifyService, messageHandlers(), paramsMap);
 	}
-
-
 }

@@ -6,8 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Component
@@ -17,14 +15,6 @@ public class ProxyProperties {
 	 * discord账号选择规则.
 	 */
 	private String accountChooseRule = "BestWaitIdleRule";
-	/**
-	 * discord单账号配置.
-	 */
-	private final DiscordAccountConfig discord = new DiscordAccountConfig();
-	/**
-	 * discord账号池配置.
-	 */
-	private final List<DiscordAccountConfig> accounts = new ArrayList<>();
 	/**
 	 * 百度翻译配置.
 	 */
@@ -46,46 +36,11 @@ public class ProxyProperties {
 	 */
 	private int notifyPoolSize = 10;
 
-	/**
-	 * 代理配置.
-	 */
 	private final ProxyConfig proxy = new ProxyConfig();
 	/**
 	 * 反代配置.
 	 */
 	private final NgDiscordConfig ngDiscord = new NgDiscordConfig();
-
-	@Data
-	public static class DiscordAccountConfig {
-		/**
-		 * 频道ID.
-		 */
-		private String channelId;
-		/**
-		 * 用户Token.
-		 */
-		private String userToken;
-		/**
-		 * 用户UserAgent.
-		 */
-		private String userAgent = Constants.DEFAULT_DISCORD_USER_AGENT;
-		/**
-		 * 是否可用.
-		 */
-		private boolean enable = true;
-		/**
-		 * 并发数.
-		 */
-		private int coreSize = 3;
-		/**
-		 * 等待队列长度.
-		 */
-		private int queueSize = 10;
-		/**
-		 * 任务超时时间(分钟).
-		 */
-		private int timeoutMinutes = 5;
-	}
 
 	@Data
 	public static class BaiduTranslateConfig {
